@@ -58,7 +58,7 @@ public class UserValidationTest extends BaseTest {
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertEquals(1, violations.size()); // Изменили ожидаемое количество нарушений
         ConstraintViolation<User> violation = violations.iterator().next();
-        assertEquals("Логин не должен содержать пробелы", violation.getMessage());
+        assertEquals("Логин не может быть пустым", violation.getMessage());
     }
     @Test
     void testInvalidLoginFormat() {

@@ -9,7 +9,8 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class FilmValidationTests  extends BaseTest{
+public class FilmValidationTests  extends BaseTest {
+
     @Test
     void testValidFilm() {
         Film film = new Film();
@@ -21,6 +22,7 @@ public class FilmValidationTests  extends BaseTest{
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertEquals(0, violations.size());
     }
+
 
     @Test
     void testInvalidName() {
@@ -35,6 +37,7 @@ public class FilmValidationTests  extends BaseTest{
         ConstraintViolation<Film> violation = violations.iterator().next();
         assertEquals("Название не может быть пустым", violation.getMessage());
     }
+
     @Test
     void testInvalidDescription() {
         Film film = new Film();
@@ -51,6 +54,7 @@ public class FilmValidationTests  extends BaseTest{
         assertEquals("Описание не должно превышать 200 символов", violation.getMessage());
 
     }
+
     @Test
     void testInvalidReleaseDate() {
         Film film = new Film();
@@ -64,6 +68,7 @@ public class FilmValidationTests  extends BaseTest{
         ConstraintViolation<Film> violation = violations.iterator().next();
         assertEquals("Дата релиза должна быть в прошлом", violation.getMessage());
     }
+
     @Test
     void testInvalidDuration() {
         Film film = new Film();

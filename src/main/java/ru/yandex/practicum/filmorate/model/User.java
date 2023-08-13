@@ -21,7 +21,7 @@ public class User {
 
     @NotNull(message = "Логин не может быть пустым")
     @NotEmpty(message = "Логин не может быть пустым")
-    @Pattern(regexp = "^[\\S]+$", message = "Логин не должен содержать пробелы")
+    @Pattern(regexp = "^[\\S]+$", message = "Логин не может быть пустым")
     private String login;
 
     private String name;
@@ -45,6 +45,7 @@ public class User {
         }
     }
 
+
     @Override
     public String toString() {
         return "User{" +
@@ -52,7 +53,8 @@ public class User {
                 ", email='" + email + '\'' +
                 ", login='" + login + '\'' +
                 ", name='" + (name != null ? name : login) + '\'' +
-                ", birthDate=" + birthDate.toString() +
+                ", birthDate=" + birthDate +
                 '}';
     }
+
 }

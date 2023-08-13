@@ -9,6 +9,7 @@ import java.util.Date;
 @Getter
 @Setter
 public class Film {
+
     private long id;
 
     @NotNull(message = "Название не может быть пустым")
@@ -41,6 +42,7 @@ public class Film {
             this.setDuration(updatedFilm.getDuration());
         }
     }
+
     @Override
     public String toString() {
         return "Film{" +
@@ -51,5 +53,6 @@ public class Film {
                 ", duration=" + duration +
                 '}';
     }
+
 }
 

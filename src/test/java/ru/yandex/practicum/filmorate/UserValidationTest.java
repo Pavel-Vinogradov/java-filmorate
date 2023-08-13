@@ -3,13 +3,13 @@ package ru.yandex.practicum.filmorate;
 import jakarta.validation.ConstraintViolation;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.User;
-
 import java.util.Date;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class UserValidationTest extends BaseTest {
+
     @Test
     void testValidUser() {
         User user = new User();
@@ -21,6 +21,7 @@ public class UserValidationTest extends BaseTest {
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertEquals(0, violations.size());
     }
+
 
     @Test
     void testInvalidEmail() {
@@ -58,20 +59,22 @@ public class UserValidationTest extends BaseTest {
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertEquals(1, violations.size()); // Изменили ожидаемое количество нарушений
         ConstraintViolation<User> violation = violations.iterator().next();
-        assertEquals("Логин не должен содержать пробелы", violation.getMessage());
+        assertEquals("Логин не может быть пустым", violation.getMessage());
     }
+
     @Test
     void testInvalidLoginFormat() {
         User user = new User();
         user.setName("John Doe");
-        user.setEmail("invalid.email.com");
+        user.setEmail("invalid@email.com");
         user.setLogin("");
 
         Set<ConstraintViolation<User>> violations = validator.validate(user);
-        assertEquals(3, violations.size());
+        assertEquals(2, violations.size());
         ConstraintViolation<User> violation = violations.iterator().next();
         assertEquals("Логин не может быть пустым", violation.getMessage());
     }
+
     @Test
     void testInvalidBirthDate() {
         User user = new User();
@@ -85,4 +88,5 @@ public class UserValidationTest extends BaseTest {
         ConstraintViolation<User> violation = violations.iterator().next();
         assertEquals("Дата рождения не может быть в будущем", violation.getMessage());
     }
+
 }

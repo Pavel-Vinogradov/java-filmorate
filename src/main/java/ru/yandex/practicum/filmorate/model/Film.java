@@ -18,11 +18,14 @@ public class Film {
     @Size(max = 200, message = "Описание не должно превышать 200 символов")
     private String description;
 
+    @PastOrPresent(message = "Дата релиза не может быть в будущем")
     @Past(message = "Дата релиза должна быть в прошлом")
     private Date releaseDate;
 
     @Positive(message = "Продолжительность фильма должна быть положительной")
     private float duration;
+
+    // Геттеры и сеттеры
 
     public void updateFrom(Film updatedFilm) {
         if (updatedFilm.getName() != null) {
@@ -34,9 +37,19 @@ public class Film {
         if (updatedFilm.getReleaseDate() != null) {
             this.setReleaseDate(updatedFilm.getReleaseDate());
         }
-        if (updatedFilm.getDuration() != 0) {
+        if (updatedFilm.getDuration() > 0) {
             this.setDuration(updatedFilm.getDuration());
         }
+    }
+    @Override
+    public String toString() {
+        return "Film{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", releaseDate=" + releaseDate +
+                ", duration=" + duration +
+                '}';
     }
 }
 

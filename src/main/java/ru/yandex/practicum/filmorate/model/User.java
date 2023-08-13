@@ -11,6 +11,7 @@ import java.util.Date;
 @Setter
 @EqualsAndHashCode
 public class User {
+
     private long id;
 
     @NotNull(message = "Электронная почта не может быть пустой")
@@ -20,10 +21,11 @@ public class User {
 
     @NotNull(message = "Логин не может быть пустым")
     @NotEmpty(message = "Логин не может быть пустым")
-    @Pattern(regexp = "^\\S+$", message = "Логин не должен содержать пробелы")
+    @Pattern(regexp = "^[\\S]+$", message = "Логин не должен содержать пробелы")
     private String login;
 
     private String name;
+
     @Past(message = "Дата рождения не может быть в будущем")
     private Date birthDate;
 
@@ -41,5 +43,16 @@ public class User {
         if (updatedUser.getBirthDate() != null) {
             this.setBirthDate(updatedUser.getBirthDate());
         }
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", login='" + login + '\'' +
+                ", name='" + (name != null ? name : login) + '\'' +
+                ", birthDate=" + birthDate.toString() +
+                '}';
     }
 }

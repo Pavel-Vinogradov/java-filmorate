@@ -37,8 +37,7 @@ final class FilmController extends BaseController<Film> {
 
     @PutMapping
     public  ResponseEntity<Film> updateFilm(@Valid @RequestBody Film film) {
-        Film existingFilm = findFilmById(film.getId());
-        if (existingFilm == null) {
+        if (!films.containsKey(film.getId())) {
             log.error("Film id {} не найден", film.getId());
             throw new FilmException("Film id " + film.getId() + " не найден");
         }
@@ -58,10 +57,4 @@ final class FilmController extends BaseController<Film> {
         }
     }
 
-    private Film findFilmById(long id) {
-        return films.values().stream()
-                .filter(film -> film.getId() == id)
-                .findFirst()
-                .orElse(null);
-    }
 }

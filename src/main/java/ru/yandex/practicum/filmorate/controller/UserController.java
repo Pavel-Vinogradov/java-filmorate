@@ -38,8 +38,8 @@ final class UserController extends BaseController<User> {
 
     @PutMapping
     public ResponseEntity<User> updateUser(@Valid @RequestBody User user) {
-        User existingUser = findUserById(user.getId());
-        if (existingUser == null) {
+
+        if (!users.containsKey(user.getId())) {
             log.error("User id {} не найден", user.getId());
             throw new UserException("User id " + user.getId() + " не найден");
         }
@@ -50,12 +50,7 @@ final class UserController extends BaseController<User> {
     }
 
 
-    private User findUserById(long id) {
-        return users.values().stream()
-                .filter(user -> user.getId() == id)
-                .findFirst()
-                .orElse(null);
-    }
+
 
     @Override
     void modelValidator(User user) throws ValidationException {

@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.FilmException;
@@ -10,56 +11,57 @@ import ru.yandex.practicum.filmorate.model.Film;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping(value = "/films", produces = "application/json")
-public class FilmController extends BaseController<Film> {
+final class FilmController extends BaseController<Film> {
 
-    private final List<Film> films = new ArrayList<>();
+    private final HashMap<Long, Film> films = new HashMap<>();
 
     @GetMapping
     public List<Film> getFilms() {
-        return films;
+        return new ArrayList<>(films.values());
     }
 
     @PostMapping
     public ResponseEntity<?> createFilm(@Valid @RequestBody Film film) {
         modelValidator(film);
         film.setId(idGenerator.incrementAndGet());
-        films.add(film);
-        logger.info("Film создан: {}", film);
+        films.put(film.getId(), film);
+        log.info("Film создан: {}", film);
         return ResponseEntity.ok(film);
     }
 
     @PutMapping
-    ResponseEntity<Film> updateFilm(@Valid @RequestBody Film updatedFilm) {
-        Film existingFilm = findFilmById(updatedFilm.getId());
+    public  ResponseEntity<Film> updateFilm(@Valid @RequestBody Film film) {
+        Film existingFilm = findFilmById(film.getId());
         if (existingFilm == null) {
-            logger.error("Film id {} не найден", updatedFilm.getId());
-            throw new FilmException("Film id " + updatedFilm.getId() + " не найден");
+            log.error("Film id {} не найден", film.getId());
+            throw new FilmException("Film id " + film.getId() + " не найден");
         }
-        modelValidator(existingFilm);
-        existingFilm.updateFrom(updatedFilm);
-        logger.info("Film обновлен: {}", existingFilm);
-        return ResponseEntity.ok(existingFilm);
-    }
-
-
-    public Film findFilmById(long id) {
-        return films.stream()
-                .filter(film -> film.getId() == id)
-                .findFirst()
-                .orElse(null);
+        modelValidator(film);
+        films.put(film.getId(), film);
+        log.info("Film обновлен: {}", film);
+        return ResponseEntity.ok(film);
     }
 
 
     @Override
     void modelValidator(Film film) throws ValidationException {
         if (film.getReleaseDate().isBefore(LocalDate.parse("1895-12-28"))) {
-            logger.warn("Некорректно указана дата релиза");
+            log.warn("Некорректно указана дата релиза");
             throw new ValidationException("Некорректно указана дата релиза.");
 
         }
+    }
+
+    private Film findFilmById(long id) {
+        return films.values().stream()
+                .filter(film -> film.getId() == id)
+                .findFirst()
+                .orElse(null);
     }
 }

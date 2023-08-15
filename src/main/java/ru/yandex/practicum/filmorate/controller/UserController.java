@@ -1,25 +1,29 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import javax.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.UserException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping(value = "/users", produces = "application/json")
-public class UserController extends BaseController<User> {
+final class UserController extends BaseController<User> {
 
-    private final List<User> users = new ArrayList<>();
+    private final HashMap<Long, User> users = new HashMap<>();
+
 
 
     @GetMapping
     public List<User> getAllUsers() {
-        return users;
+        return new ArrayList<>(users.values());
     }
 
 
@@ -27,8 +31,8 @@ public class UserController extends BaseController<User> {
     public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
         modelValidator(user);
         user.setId(idGenerator.incrementAndGet());
-        users.add(user);
-        logger.info("User создан: {}", user);
+        users.put(user.getId(), user);
+        log.info("User создан: {}", user);
         return ResponseEntity.ok(user);
     }
 
@@ -36,17 +40,18 @@ public class UserController extends BaseController<User> {
     public ResponseEntity<User> updateUser(@Valid @RequestBody User user) {
         User existingUser = findUserById(user.getId());
         if (existingUser == null) {
-            logger.error("User id {} не найден", user.getId());
+            log.error("User id {} не найден", user.getId());
             throw new UserException("User id " + user.getId() + " не найден");
         }
-        existingUser.updateFrom(user);
-        logger.info("User обновлен: {}", existingUser);
-        return ResponseEntity.ok(existingUser);
+        modelValidator(user);
+        users.put(user.getId(), user);
+        log.info("User обновлен: {}", user);
+        return ResponseEntity.ok(user);
     }
 
 
     private User findUserById(long id) {
-        return users.stream()
+        return users.values().stream()
                 .filter(user -> user.getId() == id)
                 .findFirst()
                 .orElse(null);

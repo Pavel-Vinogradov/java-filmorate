@@ -1,18 +1,18 @@
 package ru.yandex.practicum.filmorate.model;
 
 import javax.validation.constraints.*;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import java.time.LocalDate;
 
+
+@Data
 @Getter
 @Setter
 @EqualsAndHashCode
 @Builder
 public class User {
 
+    @NotNull
     private long id;
 
 
@@ -33,22 +33,6 @@ public class User {
 
     @PastOrPresent(message = "Дата рождения не может быть в будущем")
     private LocalDate birthday;
-
-
-    public void updateFrom(User updatedUser) {
-        if (updatedUser.getEmail() != null) {
-            this.setEmail(updatedUser.getEmail());
-        }
-        if (updatedUser.getLogin() != null) {
-            this.setLogin(updatedUser.getLogin());
-        }
-        if (updatedUser.getName() != null) {
-            this.setName(updatedUser.getName());
-        }
-        if (updatedUser.getBirthday() != null) {
-            this.setBirthday(updatedUser.getBirthday());
-        }
-    }
 
 
     @Override

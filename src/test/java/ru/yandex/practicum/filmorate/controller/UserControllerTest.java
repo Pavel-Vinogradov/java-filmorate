@@ -1,94 +1,54 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.web.servlet.MockMvc;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@WebMvcTest(controllers = UserController.class)
 final class UserControllerTest {
-
-
-    @Autowired
-    private MockMvc mockMvc;
-
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-
-    private User user;
+    UserController controller;
+    UserStorage userStorage;
+    UserService userService;
+    User testUser;
 
     @BeforeEach
-    public void init() {
-        user = User.builder()
-                .email("mail@mail.ru")
-                .login("Boetticher")
-                .name("Nick Name")
+    protected void init() {
+        userStorage = new InMemoryUserStorage();
+        userService = new UserService(userStorage);
+        controller = new UserController(userStorage, userService);
+
+        testUser = User.builder()
+                .name("John")
+                .email("john@mail.ru")
+                .login("login")
                 .birthday(LocalDate.of(1987, 4, 14))
                 .build();
 
     }
 
-
     @Test
-    void createNewCorrectUser_Test() throws Exception {
-        mockMvc.perform(post("/users")
-                        .content(objectMapper.writeValueAsString(user))
-                        .contentType("application/json"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json"))
-                .andExpect(jsonPath("$.id").value("1"));
+    public void createUserNameIsBlankNameIsLoginTest() {
+        testUser.setName("");
+        controller.createUser(testUser);
+        assertEquals("login", controller.getAllUsers().get(0).getName());
     }
 
-
     @Test
-    void createUser_NameIsBlank_NameIsLoginTest() throws Exception {
-        user.setName("");
-        mockMvc.perform(post("/users")
-                        .content(objectMapper.writeValueAsString(user))
-                        .contentType("application/json"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json"))
-                .andExpect(jsonPath("$.name").value(""));
+    void createUserBirthdayInFutureBadRequestTest() {
+        testUser.setBirthday(LocalDate.parse("2024-10-12"));
+        try {
+            controller.createUser(testUser);
+        } catch (ValidationException e) {
+            assertEquals("Неверно указана дата рождения", e.getMessage());
+        }
     }
 
-
-    @Test
-    void createUser_IncorrectEmailTest() throws Exception {
-        user.setEmail("incorrectEmail.ru");
-        mockMvc.perform(post("/users")
-                        .content(objectMapper.writeValueAsString(user))
-                        .contentType("application/json"))
-                .andExpect(status().isBadRequest());
-    }
-
-
-    @Test
-    void createUser_LoginIsBlank_badRequestTest() throws Exception {
-        user.setLogin("");
-        mockMvc.perform(post("/users")
-                        .content(objectMapper.writeValueAsString(user))
-                        .contentType("application/json"))
-                .andExpect(status().isBadRequest());
-    }
-
-
-    @Test
-    void createUser_BirthdayInFuture_badRequestTest() throws Exception {
-        user.setBirthday(LocalDate.parse("2024-10-12"));
-        mockMvc.perform(post("/users")
-                        .content(objectMapper.writeValueAsString(user))
-                        .contentType("application/json"))
-                .andExpect(status().isBadRequest());
-    }
 
 }

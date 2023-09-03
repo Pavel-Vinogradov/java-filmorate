@@ -3,12 +3,10 @@ package ru.yandex.practicum.filmorate.model;
 import javax.validation.constraints.*;
 import lombok.*;
 import java.time.LocalDate;
+import java.util.Set;
 
 
 @Data
-@Getter
-@Setter
-@EqualsAndHashCode
 @Builder
 public class User {
 
@@ -34,15 +32,6 @@ public class User {
     @PastOrPresent(message = "Дата рождения не может быть в будущем")
     private LocalDate birthday;
 
+    private Set<Long> friends;
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", email='" + email + '\'' +
-                ", login='" + login + '\'' +
-                ", name='" + (name != null ? name : login) + '\'' +
-                ", birthDate=" + birthday +
-                '}';
-    }
 }

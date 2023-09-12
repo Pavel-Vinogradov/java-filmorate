@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -17,40 +16,37 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(value = "/films", produces = "application/json")
 final class FilmController {
-
-    private final FilmStorage filmStorage;
-
     private final FilmService filmService;
 
     @GetMapping
     public List<Film> getFilms() {
         log.info("Поступил запрос на получение списка всех фильмов.");
-        return filmStorage.getAllFilms();
+        return filmService.getAllFilms();
     }
 
     @PostMapping
     public ResponseEntity<Film> createFilm(@Valid @RequestBody Film film) {
         log.info("Поступил запрос на добавление фильма.");
-        return ResponseEntity.ok(filmStorage.addFilm(film));
+        return ResponseEntity.ok(filmService.addFilm(film));
     }
 
     @PutMapping
     public ResponseEntity<Film> updateFilm(@Valid @RequestBody Film film) {
         log.info("Поступил запрос на изменения фильма.");
-        return ResponseEntity.ok(filmStorage.updateFilm(film));
+        return ResponseEntity.ok(filmService.updateFilm(film));
     }
 
 
     @PutMapping("/{id}/like/{filmId}")
-    public void like(@PathVariable String id, @PathVariable String filmId) {
+    public void addLike(@PathVariable String id, @PathVariable String filmId) {
         log.info("Поступил запрос на присвоение лайка фильму.");
-        filmService.like(Long.parseLong(id), Long.parseLong(filmId));
+        filmService.addLike(Long.parseLong(id), Long.parseLong(filmId));
     }
 
     @GetMapping("/{id}")
-    public Film getFilm(@PathVariable String id) {
+    public ResponseEntity<Film> getFilm(@PathVariable String id) {
         log.info("Получен GET-запрос на получение фильма");
-        return filmStorage.getFilmById(Long.parseLong(id));
+        return ResponseEntity.ok(filmService.getFilmById(Long.parseLong(id)));
     }
 
     @GetMapping("/popular")

@@ -8,7 +8,7 @@ public interface UserStorage {
 
     List<User> getAllUsers();
 
-    User getUserById(Long id);
+    User getUserById(long id);
 
 
     User createUser(User user);
@@ -16,14 +16,14 @@ public interface UserStorage {
     User updateUser(User user);
 
 
-    User addFriend(Long userId, Long friendId);
+    User addFriend(long userId, long friendId);
 
 
-    User removeFriend(Long userId, Long friendId);
+    User removeFriend(long userId, long friendId);
 
 
-    List<User> getMutualFriends(Long id, Long otherId);
+    List<User> getMutualFriends(long id, long otherId);
 
 
-    List<User> getFriendsByUserId(Long id);
+    List<User> getFriendsByUserId(long id);
 }

@@ -17,24 +17,41 @@ public class UserService {
     private final UserStorage userStorage;
 
 
-    public User addFriend(Long userId, Long friendId) {
+    public User addFriend(long userId, long friendId) {
         userStorage.addFriend(userId, friendId);
         return userStorage.getUserById(userId);
     }
 
 
-    public User deleteFriend(Long userId, Long friendId) {
+    public User deleteFriend(long userId, long friendId) {
         userStorage.removeFriend(userId, friendId);
         return userStorage.getUserById(userId);
     }
 
 
-    public List<User> getUserFriends(Long userId) {
+    public List<User> getUserFriends(long userId) {
         return userStorage.getFriendsByUserId(userId);
     }
 
 
-    public List<User> getMutualFriends(Long userId, Long otherId) {
+    public List<User> getMutualFriends(long userId, long otherId) {
         return userStorage.getMutualFriends(userId, otherId);
     }
+
+    public List<User> getAllUsers() {
+        return userStorage.getAllUsers();
+    }
+
+    public User createUser(User user) {
+        return userStorage.createUser(user);
+    }
+
+    public User updateUser(User user) {
+        return userStorage.updateUser(user);
+    }
+
+    public User getUserById(long id) {
+        return userStorage.getUserById(id);
+    }
+
 }

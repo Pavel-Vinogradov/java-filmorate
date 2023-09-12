@@ -8,7 +8,7 @@ public interface FilmStorage {
 
     List<Film> getAllFilms();
 
-    Film getFilmById(Long id);
+    Film getFilmById(long id);
 
     Film addFilm(Film film);
 

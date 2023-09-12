@@ -24,7 +24,7 @@ public final class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film getFilmById(Long id) {
+    public Film getFilmById(long id) {
         if (films.containsKey(id)) {
             return films.get(id);
         } else throw new NotFoundException("Фильм не найден");
@@ -42,20 +42,24 @@ public final class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film updateFilm(Film film) {
-        if (!films.containsKey(film.getId())) {
-            log.error("Film id {} не найден", film.getId());
-            throw new NotFoundException("Film id " + film.getId() + " не найден");
+    public Film updateFilm(Film updatedFilm) {
+        Long filmId = updatedFilm.getId();
+        if (!films.containsKey(filmId)) {
+            log.error("Film id {} не найден", filmId);
+            throw new NotFoundException("Film id " + filmId + " не найден");
         }
-        modelValidator(film);
-        film.setLikes(new HashSet<>());
-        films.put(film.getId(), film);
-        log.info("Film обновлен: {}", film);
-        return film;
 
+        Film existingFilm = films.get(filmId);
+        updatedFilm.setLikes(existingFilm.getLikes());
+
+        // Производим остальное обновление полей фильма
+        modelValidator(updatedFilm);
+        films.put(filmId, updatedFilm);
+        log.info("Film обновлен: {}", updatedFilm);
+        return updatedFilm;
     }
 
-    void modelValidator(Film film) throws ValidationException {
+   private void modelValidator(Film film) throws ValidationException {
 
         if (film.getReleaseDate().isBefore(LocalDate.parse("1895-12-28"))
                 || film.getReleaseDate().isAfter(LocalDate.now())) {

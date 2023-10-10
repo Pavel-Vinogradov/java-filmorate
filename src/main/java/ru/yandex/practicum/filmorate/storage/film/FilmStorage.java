@@ -6,13 +6,19 @@ import java.util.List;
 
 public interface FilmStorage {
 
-    List<Film> getAllFilms();
+    public List<Film> findAllFilms();
 
-    Film getFilmById(long id);
+    public Film create(Film film);
 
-    Film addFilm(Film film);
+    public Film rewriteFilm(Film film);
 
-    Film updateFilm(Film film);
+    public Film findById(Integer id);
 
+    public boolean containsFilm(Integer id);
+
+    public void likeFilm(Integer id, Integer userId);
+
+    public void deleteLike(Integer id, Integer userId);
+
+    public List<Film> bestFilms(Integer count);
 }
-

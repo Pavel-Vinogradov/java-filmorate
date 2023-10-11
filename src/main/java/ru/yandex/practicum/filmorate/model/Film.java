@@ -3,11 +3,9 @@ package ru.yandex.practicum.filmorate.model;
 import javax.validation.constraints.*;
 import lombok.*;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
-@Getter
-@Setter
-@EqualsAndHashCode
 @Builder
 public class Film {
 
@@ -32,17 +30,7 @@ public class Film {
     @Positive(message = "Продолжительность фильма должна быть положительной")
     private float duration;
 
-
-    @Override
-    public String toString() {
-        return "Film{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", releaseDate=" + releaseDate +
-                ", duration=" + duration +
-                '}';
-    }
+    private Set<Long> likes;
 
 }
 

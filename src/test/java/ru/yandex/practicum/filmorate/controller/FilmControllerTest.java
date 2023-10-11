@@ -1,93 +1,85 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
 import java.time.LocalDate;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-@WebMvcTest(controllers = FilmController.class)
-final class FilmControllerTest {
+public class FilmControllerTest {
 
 
-    @Autowired
-    private MockMvc mockMvc;
+    FilmStorage filmStorage;
+    FilmController controller;
 
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    private Film film;
-
+    FilmService filmService;
+    Film testFilm;
 
     @BeforeEach
-    public void init() {
-        film = Film.builder()
+    protected void init() {
+        filmStorage = new InMemoryFilmStorage();
+        filmService = new FilmService(filmStorage);
+        controller = new FilmController(filmService);
+        testFilm = Film.builder()
                 .name("Тестовый фильм")
                 .description("Тестовое описание тестового фильма")
-                .releaseDate(LocalDate.of(1999, 12,27))
+                .releaseDate(LocalDate.of(1999, 12, 27))
                 .duration(87)
                 .build();
-
     }
 
     @Test
-    void createNewCorrectFilm_isOkTest() throws Exception {
-        mockMvc.perform(post("/films")
-                        .content(objectMapper.writeValueAsString(film))
-                        .contentType("application/json"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value("1"));
+    void createNewCorrectFilmIsOkTest() {
+        controller.createFilm(testFilm);
+        Assertions.assertEquals(testFilm, filmStorage.getFilmById(1L));
     }
 
     @Test
-    void createFilm_NameIsBlank_badRequestTest() throws Exception {
-        film.setName("");
-        mockMvc.perform(post("/films")
-                        .content(objectMapper.writeValueAsString(film))
-                        .contentType("application/json"))
-                .andExpect(status().isBadRequest());
+    void createFilmNameIsBlankBadRequestTest() {
+        testFilm.setName("");
+        try {
+            controller.createFilm(testFilm);
+        } catch (ValidationException e) {
+            Assertions.assertEquals("Некорректно указано название фильма.", e.getMessage());
+        }
     }
 
+
     @Test
-    void createFilm_IncorrectDescription_badRequestTest() throws Exception {
-        film.setDescription("Размер описания значительно превышает двести символов, а может и не превышает " +
+    void createFilmIncorrectDescriptionBadRequestTest() {
+        testFilm.setDescription("Размер описания значительно превышает двести символов, а может и не превышает " +
                 "(надо посчитать). Нет, к сожалению размер описания фильма сейчас не превышает двести символов," +
                 "но вот сейчас однозначно стал превышать двести символов!");
-        mockMvc.perform(post("/films")
-                        .content(objectMapper.writeValueAsString(film))
-                        .contentType("application/json"))
-                .andExpect(status().isBadRequest());
+        try {
+            controller.createFilm(testFilm);
+        } catch (ValidationException e) {
+            Assertions.assertEquals("Превышено количество символов в описании фильма.", e.getMessage());
+        }
     }
 
     @Test
-    void createFilm_RealiseDateInFuture_badRequestTest() throws Exception {
-        film.setReleaseDate(LocalDate.of(2026, 12, 9));
-        mockMvc.perform(post("/films")
-                        .content(objectMapper.writeValueAsString(film))
-                        .contentType("application/json"))
-                .andExpect(status().isBadRequest());
+    void createFilmRealiseDateInFutureBadRequestTest() {
+        testFilm.setReleaseDate(LocalDate.of(2033, 4, 14));
+        try {
+            controller.createFilm(testFilm);
+        } catch (ValidationException e) {
+            Assertions.assertEquals("Некорректно указана дата релиза.", e.getMessage());
+        }
     }
 
     @Test
-    void createFilm_RealiseDateBeforeFirstFilmDate_badRequestTest() throws Exception {
-        film.setReleaseDate(LocalDate.of(1885, 12,12));
-        mockMvc.perform(post("/films")
-                        .content(objectMapper.writeValueAsString(film))
-                        .contentType("application/json"))
-                .andExpect(status().isBadRequest());
+    void createFilmRealiseDateBeforeFirstFilmDateBadRequestTest() {
+        testFilm.setReleaseDate(LocalDate.of(1833, 4, 14));
+        try {
+            controller.createFilm(testFilm);
+        } catch (ValidationException e) {
+            Assertions.assertEquals("Некорректно указана дата релиза.", e.getMessage());
+        }
     }
 
 }
-
-

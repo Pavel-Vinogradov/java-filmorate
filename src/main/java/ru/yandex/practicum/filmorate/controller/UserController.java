@@ -16,13 +16,19 @@ public class UserController {
     private final UserService userService;
 
     public UserController(UserService userService) {
+
         this.userService = userService;
+
     }
+
 
     @GetMapping
     public List<User> findAllUsers() {
+
         return userService.findAllUsers();
+
     }
+
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable Integer id) {
@@ -56,16 +62,19 @@ public class UserController {
         return userService.updateUser(user);
     }
 
+
     @PutMapping("/{id}/friends/{friendId}")
     public void addFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
         log.info("Add friend");
         userService.addFriends(id, friendId);
     }
 
+
     @DeleteMapping("/{id}/friends/{friendId}")
     @ResponseBody
-    public void deleteFriendsById(@PathVariable Integer id, @PathVariable Integer friendId) {
+    public void deleteFriendById(@PathVariable Integer id, @PathVariable Integer friendId) {
         log.info("Delete friends by id");
-        userService.deleteFriendsById(id, friendId);
+        userService.deleteFriendById(id, friendId);
     }
+
 }

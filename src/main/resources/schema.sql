@@ -3,7 +3,7 @@ mpa_id int PRIMARY KEY AUTO_INCREMENT NOT NULL,
 mpa_name varchar(200) NOT NULL
 );
 
-CREATE TABLE genre (
+CREATE TABLE genres (
 genre_id int PRIMARY KEY AUTO_INCREMENT NOT NULL,
 genre_name varchar(200)
 );
@@ -26,8 +26,10 @@ login varchar(200) NOT NULL,
 user_name varchar(200),
 birthday date check (birthday<now())
 );
+create unique index if not exists USER_EMAIL_UINDEX on USERS (email);
+create unique index if not exists USER_LOGIN_UINDEX on USERS (login);
 
-CREATE TABLE like_ids (
+CREATE TABLE likes  (
 film_id int NOT NULL,
 user_id int NOT NULL,
 PRIMARY KEY (film_id, user_id),
@@ -35,14 +37,14 @@ foreign key (film_id) references films(film_id),
 foreign key (user_id) references users(user_id)
 );
 
-CREATE TABLE film_genre (
+CREATE TABLE film_genres (
 film_id int NOT NULL,
 genre_id int NOT NULL,
 foreign key (film_id) references films(film_id),
-foreign key (genre_id) references genre(genre_id)
+foreign key (genre_id) references genres(genre_id)
 );
 
-CREATE TABLE friendship (
+CREATE TABLE friends (
 user_id int NOT NULL ,
 friend_id int NOT NULL,
 foreign key (user_id) references users(user_id),

@@ -19,7 +19,7 @@ public class GenreDbStorage implements GenreStorage {
     }
 
     public List<Genre> getGenres() {
-        String sqlQuery = "SELECT * FROM genre";
+        String sqlQuery = "SELECT * FROM genres";
         return jdbcTemplate.query(sqlQuery, this::mapRowToGenre);
     }
 
@@ -27,7 +27,7 @@ public class GenreDbStorage implements GenreStorage {
         if (!containsGenre(id)) {
             throw new ObjectNotFoundException(String.format("Genre with id=%d not found", id));
         }
-        return jdbcTemplate.queryForObject("SELECT * FROM genre WHERE genre_id=?",
+        return jdbcTemplate.queryForObject("SELECT * FROM genres WHERE genre_id=?",
                 (resultSet, rowNum) -> {
                     Genre newGenre = new Genre();
                     newGenre.setId(id);
@@ -38,7 +38,7 @@ public class GenreDbStorage implements GenreStorage {
 
     public boolean containsGenre(Integer id) {
         try {
-            Long count = jdbcTemplate.queryForObject("select count(genre_id) from genre where genre_id = ?", Long.class, id);
+            Long count = jdbcTemplate.queryForObject("select count(genre_id) from genres where genre_id = ?", Long.class, id);
             return count == 1;
         } catch (EmptyResultDataAccessException e) {
             throw new ObjectNotFoundException(String.format("Genre with id=%d not found", id));

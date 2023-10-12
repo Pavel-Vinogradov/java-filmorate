@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exeption.NotFoundException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.friend.FriendshipRepository;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
@@ -15,10 +16,12 @@ import java.util.List;
 public class UserService {
 
     private final UserStorage userStorage;
+    private final FriendshipRepository friendshipRepository;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(UserStorage userStorage, FriendshipRepository friendshipRepository) {
         this.userStorage = userStorage;
+        this.friendshipRepository = friendshipRepository;
     }
 
     public User createUser(User user) {
@@ -45,27 +48,27 @@ public class UserService {
     public void addFriends(Integer id, Integer friendId) {
         validateIdExist(id);
         validateIdExist(friendId);
-        userStorage.addFriends(id, friendId);
+        friendshipRepository.addFriends(id, friendId);
         log.info("Friend added");
     }
 
-    public void deleteFriendsById(Integer id, Integer friendId) {
+    public void deleteFriendById(Integer id, Integer friendId) {
         validateIdExist(id);
         validateIdExist(friendId);
-        userStorage.deleteFriendsById(id, friendId);
+        friendshipRepository.deleteFriendsById(id, friendId);
     }
 
     public List<User> getFriends(Integer id) {
         validateIdExist(id);
         log.info("List of friends done");
-        return userStorage.getFriends(id);
+        return friendshipRepository.getFriends(id);
     }
 
     public List<User> commonFriends(Integer id, Integer otherId) {
         validateIdExist(id);
         validateIdExist(otherId);
         log.info("List of common friends done");
-        return userStorage.commonFriends(id, otherId);
+        return friendshipRepository.commonFriends(id, otherId);
     }
 
     private void validateIdExist(Integer id) {

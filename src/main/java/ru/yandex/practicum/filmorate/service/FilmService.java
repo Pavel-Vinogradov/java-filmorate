@@ -2,13 +2,14 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exeption.NotFoundException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.like.LikeStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
@@ -16,14 +17,15 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FilmService {
-    private static final Logger log = LoggerFactory.getLogger(FilmService.class);
     private static final String FILM_BIRTHDAY = "1895-12-28";
     private static final String FILM_NOT_FOUND_MSG = "Film with id=%d not found";
     private static final String USER_NOT_FOUND_MSG = "User with id=%d not found";
 
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final LikeStorage likeStorage;
 
     public List<Film> findAllFilms() {
         return filmStorage.findAllFilms();
@@ -37,15 +39,15 @@ public class FilmService {
         return filmStorage.create(film);
     }
 
-    public Film rewriteFilm(@NonNull Film film) {
+    public Film updateFilm(@NonNull Film film) {
         if (!filmStorage.containsFilm(film.getId())) {
             throw new NotFoundException("There is no such film in the database");
         }
         checkFilm(film);
-        return filmStorage.rewriteFilm(film);
+        return filmStorage.updateFilm(film);
     }
 
-    public Film getFilmsById(@NonNull Integer id) {
+    public Film getFilmById(@NonNull Integer id) {
         checkFilmExists(id);
         log.info(String.format("Info about film id=%d", id));
         return filmStorage.findById(id);
@@ -54,7 +56,7 @@ public class FilmService {
     public void likeFilm(Integer id, Integer userId) {
         checkFilmExists(id);
         checkUserExists(userId);
-        filmStorage.likeFilm(id, userId);
+        likeStorage.likeFilm(id, userId);
         log.info(String.format("Liked the movie with id=%d by user with id=%d", id, userId));
     }
 
@@ -63,7 +65,7 @@ public class FilmService {
         checkId(userId);
         checkFilmExists(id);
         checkUserExists(userId);
-        filmStorage.deleteLike(id, userId);
+        likeStorage.deleteLike(id, userId);
         log.info(String.format("Like on movie with id=%d by user with id=%d was deleted", id, userId));
     }
 

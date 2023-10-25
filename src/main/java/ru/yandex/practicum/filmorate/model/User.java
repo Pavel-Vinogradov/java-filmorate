@@ -1,37 +1,31 @@
 package ru.yandex.practicum.filmorate.model;
 
-import javax.validation.constraints.*;
-import lombok.*;
+import lombok.Data;
+import org.springframework.stereotype.Component;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Past;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
-
+@Component
 @Data
-@Builder
 public class User {
+    private int id;
 
-    @NotNull
-    private long id;
-
-
-    @NotNull(message = "Электронная почта не может быть пустой")
-    @NotEmpty(message = "Электронная почта не может быть пустой")
-    @Email(message = "Неверный формат электронной почты")
+    @NotBlank(message = "Email cannot be empty")
+    @Email(message = "Incorrect email format")
     private String email;
 
-
-    @NotNull(message = "Логин не может быть пустым")
-    @NotEmpty(message = "Логин не может быть пустым")
-    @Pattern(regexp = "^[\\S]+$", message = "Логин не может быть пустым")
+    @NotBlank(message = "The login cannot be empty")
     private String login;
-
 
     private String name;
 
-
-    @PastOrPresent(message = "Дата рождения не может быть в будущем")
+    @Past(message = "The date of birth cannot be in the future")
     private LocalDate birthday;
 
-    private Set<Long> friends;
-
+    private Set<Integer> friendIds = new HashSet<>();
 }
